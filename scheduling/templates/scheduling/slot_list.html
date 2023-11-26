@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Available Slots</title>
+</head>
+<body>
+    <h2>Available Slots</h2>
+
+    <!-- Display messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div>{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <ul>
+
+        {% for slot in slots %}
+            <div>
+                <!-- Slot details -->
+                <p>{{ slot.description }}</p>
+                <p>Rate: {{ slot.hourly_rate }}</p>
+                <!-- Sign up or status button -->
+                {% if user.is_authenticated %}
+                    {% if slot.status == 'available' %}
+                        <form method="post" action="{% url 'slot_sign_up' slot.id %}">
+                            {% csrf_token %}
+                            <button type="submit">Sign Up</button>
+                        </form>
+                    {% elif slot.status == 'pending' %}
+                        <button disabled>Pending Approval</button>
+                    {% elif slot.status == 'taken' and slot.user_is_signed_up %}
+                        <button disabled>Signed Up</button>
+                    {% endif %}
+                {% else %}
+                    <button disabled>Login to Sign Up</button>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>No slots available.</p>
+        {% endfor %}
+    </ul>
+</body>
+</html>
